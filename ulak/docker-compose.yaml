@@ -19,6 +19,12 @@ services:
        # metrics: 9419
       - "5672:5672"   # AMQP protokolü için standart port
       - "15672:15672" # Web tabanlı yönetim arayüzü için port
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
     networks:
       privnet:
         ipv4_address: "10.100.100.2"
@@ -42,6 +48,26 @@ services:
         aliases:
           - mongo.ulakhaberlesme.com.tr
 
+  paas-mongo-express:
+    image: mongo-express # https://hub.docker.com/_/mongo-express
+    container_name: paas-mongo-express
+    restart: always
+    networks:
+      privnet:
+        ipv4_address: "10.100.100.4"
+        aliases:
+          - mongo-express.ulakhaberlesme.com.tr
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://cnrusr:P5vKG6vE@mongo.ulakhaberlesme.com.tr:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: cnrusr # GUI kullanıcı adı
+      ME_CONFIG_MONGODB_ADMINPASSWORD: P5vKG6vE # GUI kullanıcı şifresi
+      ME_CONFIG_BASICAUTH: false
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
+    depends_on:
+      - paas-mongo
+
   ulak-nrf:
     container_name: ulak-nrf
     image: registry.ulakhaberlesme.com.tr/cinar/nrf/monolith:latest-stable-xenial
@@ -56,22 +82,28 @@ services:
     volumes:
       - ./config/nrf-settings.json:/opt/cinar/nrf/settings.json
       - ./config/nrf-NFProfile.json:/opt/cinar/nrf/NFProfile.json
-      - ./cert/:/opt/cinar/certificate
-      - ./cert/:/opt/cinar/nrf/certificate
+      - ./cert:/opt/cinar/certificate
+      - ./cert:/opt/cinar/nrf/certificate
     environment:
       DB_URI: mongodb://ulak-mongodb/free5gc
       GIN_MODE: release
     networks:
       privnet:
-        ipv4_address: "10.100.100.4"
+        ipv4_address: "10.100.100.5"
         aliases:
           - nrf.ulakhaberlesme.com.tr
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q 'DB connection is successful' /var/log/cinar/nrf/NRF.log"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
     depends_on:
       - paas-mongo
 
   ulak-amf:
     container_name: ulak-amf
-    image: registry.ulakhaberlesme.com.tr/cinar/amf/monolith:latest-stable-xenial-dbg
+    image: registry.ulakhaberlesme.com.tr/cinar/amf/monolith:latest-stable-xenial
     expose:
       - 6286
       - 6210
@@ -90,28 +122,29 @@ services:
       GIN_MODE: release
     networks:
       privnet:
-        ipv4_address: "10.100.100.5"
+        ipv4_address: "10.100.100.6"
         aliases:
           - amf.ulakhaberlesme.com.tr
     depends_on:
-      - paas-rabbitmq
-      - paas-mongo
-      - ulak-nrf
+      ulak-nrf:
+        condition: service_healthy
+      paas-rabbitmq:
+        condition: service_healthy
 
   ueransim:
     container_name: ueransim
     image: free5gc/ueransim:latest
     command: ./nr-gnb -c ./config/gnbcfg.yaml
     volumes:
-      - ./ulak-gnb.yaml:/ueransim/config/gnbcfg.yaml
-      - ./ulak-ue.yaml:/ueransim/config/uecfg.yaml
+      - ./config/ulak-gnb.yaml:/ueransim/config/gnbcfg.yaml
+      - ./config/ulak-ue.yaml:/ueransim/config/uecfg.yaml
     cap_add:
       - NET_ADMIN
     devices:
       - "/dev/net/tun"
     networks:
       privnet:
-        ipv4_address: "10.100.100.6"
+        ipv4_address: "10.100.100.7"
         aliases:
           - gnb.ulakhaberlesme.com.tr
     depends_on:

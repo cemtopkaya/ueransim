@@ -13,6 +13,48 @@ export MONGO_PASS="P5vKG6vE"
 echo '
 use admin
 db.getUsers()
+
+const dbs = db.adminCommand("listDatabases").databases
+dbs.forEach(dbInfo => {
+    print("Veritabanı: " + dbInfo.name);
+    try {
+        const currentDb = db.getSiblingDB(dbInfo.name);
+        // Bu veritabanındaki kullanıcıları listele
+        const users = currentDb.getUsers();
+        if (users.length > 0) {
+            print("Kullanıcılar:");
+            users.forEach(user => {
+                print(" - " + user.user + " (Rol: " + user.roles.map(r => r.role).join(", ") + ")");
+            });
+        } else {
+            print("Bu veritabanında kullanıcı yok.");
+        }
+    } catch (e) {
+        print("Hata: " + e);
+    }
+    print("--------------------");
+});' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+```
+
+#### Kullanıcıyı Veritabanına Yetkilendir
+
+```sh
+clear
+export MONGO_IP="10.100.100.3"
+export MONGO_USERNAME="cnrusr"
+export MONGO_PASS="P5vKG6vE"
+echo '
+db.grantRolesToUser("cnrusr", [ { role: "readWrite", db: "cinarnrftest" } ])
+
+use admin
+// admin DBde tanımlı tüm kullanıcılar
+db.getUsers()
+
+// cnrusr Kullanıcısının bilgileri
+db.getUser("cnrusr")
+
+// cnrusr Kullanıcısının tüm bilgiler (yetkili olduğu DB ve rolleri)
+db.runCommand({ usersInfo: { user: "cnrusr", db: "admin" }, showPrivileges: true })
 ' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
 
@@ -36,8 +78,7 @@ echo '
           ]
         }
     );
-    db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
-    db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+    db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
 
 #### DB Listesini Çek
@@ -82,8 +123,16 @@ clear
 export MONGO_IP="10.100.100.3"
 export MONGO_USERNAME="cnrusr"
 export MONGO_PASS="P5vKG6vE"
-export NRF_IP=${NRF_IP_ADDRESS-"10.100.100.4"}
-export AMF_HOST_IP=${NF_DEV_IP_ADDRESS-"10.100.100.5"}
+export NRF_IP=${NRF_IP_ADDRESS-"10.100.100.5"}
+export AMF_HOST_IP="10.100.100.6"
+
+# _id:0 silinsin ki tekrar oluşturulsun
+
+echo '
+db.getSiblingDB("AmfDB").getCollection("AmfList").deleteOne({ _id: "0" })
+' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+
+# Tekrar oluşturalım
 export JSON=`cat << EOF
 {
         "_id": "0",
@@ -515,6 +564,7 @@ export JSON=`cat << EOF
         }
     }
 EOF`
+
 echo '
     db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
     db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"

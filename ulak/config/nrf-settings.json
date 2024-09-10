@@ -15,12 +15,12 @@
     "JWTAuthenticate": false,
     "MutualAuthenticate": false,
     "OAuth2": {
-      "PrivateKey": "certificate/jwt.key",
-      "PublicKey": "certificate/jwt.pub"
+      "PrivateKey": "/opt/cinar/nrf/certificate/jwt.key",
+      "PublicKey": "/opt/cinar/nrf/certificate/jwt.pub"
     },
     "TLS": {
-      "PublicKey": "certificate/localhost.crt",
-      "PrivateKey": "certificate/localhost.key"
+      "PublicKey": "/opt/cinar/nrf/certificate/localhost.crt",
+      "PrivateKey": "/opt/cinar/nrf/certificate/localhost.key"
     }
   },
   "Logging": {
@@ -221,9 +221,9 @@
     {
       "mcc": "002",
       "mnc": "002",
-      "NFDiscoveryUri": "https://10.10.10.10:8006",
-      "AccessTokenUri": "https://10.10.10.10:8007",
-      "NFManagementUri": "https://10.10.10.10:8001"
+      "NFDiscoveryUri": "https://10.100.100.4:8006",
+      "AccessTokenUri": "https://10.100.100.4:8007",
+      "NFManagementUri": "https://10.100.100.4:8001"
     }
   ]
 }
