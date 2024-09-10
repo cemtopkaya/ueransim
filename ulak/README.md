@@ -1,3 +1,39 @@
+
+### Ortak Mongo Ayarları
+
+```shell
+clear
+export MONGO_IP="10.100.100.3"
+export MONGO_USERNAME="cnrusr"
+export MONGO_PASS="P5vKG6vE"
+echo '
+    db.createUser(
+        {
+          user: "cnrusr",
+          pwd: "P5vKG6vE",
+          roles: [
+            {
+              role: "root",
+              db: "admin"
+            }
+          ]
+        }
+    );
+    db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
+    db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' |' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+```
+
+### NRF Mongo Ayarları
+```shell
+clear
+# create db and collections
+echo '
+    db.getSiblingDB("cinarnrftest").createCollection("cinarnfcollection", { capped : true, size : 6142800, max : 10000 } );
+    db.getSiblingDB("cinarnrftest").createCollection("cinarsubscollection", { capped : true, size : 6142800, max : 10000 } );
+    db.getSiblingDB("cinarnrftest").createCollection("cinarnfstatecollection", { capped : true, size : 6142800, max : 10000 } );' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+```
+
+### AMF Mongo Ayarları
 ```shell
 clear
 export MONGO_IP="mongo.ulakhaberlesme.com.tr"
@@ -437,18 +473,6 @@ export JSON=`cat << EOF
     }
 EOF`
 echo '
-    db.createUser(
-        {
-          user: "cnrusr",
-          pwd: "P5vKG6vE",
-          roles: [
-            {
-              role: "root",
-              db: "admin"
-            }
-          ]
-        }
-      );
     db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
     db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```

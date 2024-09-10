@@ -1,6 +1,6 @@
 services:
   paas-rabbitmq:
-    container_name: rabbitmq
+    container_name: paas-rabbitmq
     hostname: rabbitmq
     image: rabbitmq:3.13.6-management
     # image: 'bitnami/rabbitmq:3.11.8-debian-11-r0'
@@ -21,17 +21,24 @@ services:
       - "15672:15672" # Web tabanlı yönetim arayüzü için port
     networks:
       privnet:
+        ipv4_address: "10.100.100.2"
         aliases:
           - rabbit.ulakhaberlesme.com.tr
 
   paas-mongo:
-    container_name: ulak-mongodb
+    container_name: paas-mongo
+    hostname: mongo
     image: mongo
     command: mongod --port 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cnrusr
+      MONGO_INITDB_ROOT_PASSWORD: P5vKG6vE
+      MONGO_INITDB_DATABASE: cinarnrftest
     expose:
       - "27017"
     networks:
       privnet:
+        ipv4_address: "10.100.100.3"
         aliases:
           - mongo.ulakhaberlesme.com.tr
 
@@ -56,6 +63,7 @@ services:
       GIN_MODE: release
     networks:
       privnet:
+        ipv4_address: "10.100.100.4"
         aliases:
           - nrf.ulakhaberlesme.com.tr
     depends_on:
@@ -82,6 +90,7 @@ services:
       GIN_MODE: release
     networks:
       privnet:
+        ipv4_address: "10.100.100.5"
         aliases:
           - amf.ulakhaberlesme.com.tr
     depends_on:
@@ -102,7 +111,7 @@ services:
       - "/dev/net/tun"
     networks:
       privnet:
-        # ipv4_address: 10.100.200.3
+        ipv4_address: "10.100.100.6"
         aliases:
           - gnb.ulakhaberlesme.com.tr
     depends_on:
@@ -111,6 +120,7 @@ services:
 
 networks:
   privnet:
+    name: ulak-privnet
     ipam:
       driver: default
       config:

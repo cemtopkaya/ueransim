@@ -47,7 +47,7 @@
   "heartBeatTimer": 3,
   "interPlmnFqdn": "",
   "ipv4Addresses": [
-    "nrf.ulakhaberlesme.com.tr"
+    "10.100.100.3"
   ],
   "ipv6Addresses": [],
   "load": 0,
@@ -73,7 +73,7 @@
       "interPlmnFqdn": "",
       "ipEndPoints": [
         {
-          "ipv4Address": "nrf.ulakhaberlesme.com.tr",
+          "ipv4Address": "10.100.100.3",
           "ipv6Address": "fe80::a00:27ff:feae:3fc8%eps0s8",
           "port": 8001,
           "transport": ""
@@ -111,7 +111,7 @@
       "interPlmnFqdn": "",
       "ipEndPoints": [
         {
-          "ipv4Address": "nrf.ulakhaberlesme.com.tr",
+          "ipv4Address": "10.100.100.3",
           "ipv6Address": "",
           "port": 8006,
           "transport": ""
