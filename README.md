@@ -1,4 +1,4 @@
-# UERANSim
+# UE ve RAN Simülatörü
 
 UERanSim'in çalıştırılabilir dosyaları:
 1. **`nr-gnb`** : 5G gNB (RAN) için ana yürütülebilir dosya
