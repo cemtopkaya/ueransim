@@ -1,5 +1,30 @@
 services:
-  ulak-db:
+  paas-rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:3.13.6-management
+    # image: 'bitnami/rabbitmq:3.11.8-debian-11-r0'
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin    # RabbitMQ yönetici kullanıcı adı
+      - RABBITMQ_DEFAULT_PASS=admin    # RabbitMQ yönetici kullanıcı şifresi
+      - RABBITMQ_VHOST='/'             # RabbitMQ kullanıcı için sanal ana bilgisayar adı (RabbitMQ yönetici kullanıcı için sanal ana bilgisayar adı ile aynı olmamalı)
+      - RABBITMQ_PLUGINS="rabbitmq_management" # RabbitMQ eklentileri (örneğin, yönetim eklentisi)
+      - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true # Allow web access to RabbitMQ management portal for RABBITMQ_USERNAME
+    ports:
+       # amqp: 5672
+       # amqpTls: 5671
+       # dist: 25672
+       # manager: 15672
+       # epmd: 4369
+       # metrics: 9419
+      - "5672:5672"   # AMQP protokolü için standart port
+      - "15672:15672" # Web tabanlı yönetim arayüzü için port
+    networks:
+      privnet:
+        aliases:
+          - rabbit.ulakhaberlesme.com.tr
+
+  paas-mongo:
     container_name: ulak-mongodb
     image: mongo
     command: mongod --port 27017
@@ -8,7 +33,7 @@ services:
     networks:
       privnet:
         aliases:
-          - db
+          - mongo.ulakhaberlesme.com.tr
 
   ulak-nrf:
     container_name: ulak-nrf
@@ -22,8 +47,10 @@ services:
       - 8009
       - 8010
     volumes:
-      - ./ulak-nrf.yaml:/free5gc/config/nrfcfg.yaml
-      - ./ulak-cert:/free5gc/cert
+      - ./config/nrf-settings.json:/opt/cinar/nrf/settings.json
+      - ./config/nrf-NFProfile.json:/opt/cinar/nrf/NFProfile.json
+      - ./cert/:/opt/cinar/certificate
+      - ./cert/:/opt/cinar/nrf/certificate
     environment:
       DB_URI: mongodb://ulak-mongodb/free5gc
       GIN_MODE: release
@@ -32,7 +59,7 @@ services:
         aliases:
           - nrf.ulakhaberlesme.com.tr
     depends_on:
-      - ulak-db
+      - paas-mongo
 
   ulak-amf:
     container_name: ulak-amf
@@ -49,13 +76,17 @@ services:
       - 38412
     volumes:
       - ./ulak-amf.yaml:/free5gc/config/amfcfg.yaml
-      - ./ulak-cert:/free5gc/cert
+      - ./cert/:/opt/cinar/certificate
+      - ./cert/:/opt/cinar/amf/certificate
     environment:
       GIN_MODE: release
     networks:
       privnet:
-        ipv4_address:
+        aliases:
+          - amf.ulakhaberlesme.com.tr
     depends_on:
+      - paas-rabbitmq
+      - paas-mongo
       - ulak-nrf
 
   ueransim:
@@ -73,16 +104,16 @@ services:
       privnet:
         # ipv4_address: 10.100.200.3
         aliases:
-          - gnb.free5gc.org
+          - gnb.ulakhaberlesme.com.tr
     depends_on:
-      - free5gc-amf
-      - free5gc-upf
+      - ulak-amf
+      # - ulak-upf
 
 networks:
   privnet:
     ipam:
       driver: default
       config:
-        - subnet: 10.100.200.0/24
+        - subnet: 10.100.100.0/24
     driver_opts:
-      com.docker.network.bridge.name: br-free5gc
+      com.docker.network.bridge.name: br-ulak

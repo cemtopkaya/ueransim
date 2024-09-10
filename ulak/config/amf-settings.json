@@ -1,0 +1,60 @@
+{
+  "settings": {
+    "AMFServicesConfigurations": {
+      "amfPointer": "0",
+      "timerValues": {
+        "useDefaultValues": "false",
+        "mrtValue": "30",
+        "idtValue": "30",
+        "t3512TimerUnit": "0",
+        "t3512TimerValue": "5",
+        "t3550": "6000",
+        "t3560": "6000",
+        "t3570": "6000",
+        "t3522": "6000",
+        "t3555": "6000",
+        "t3565": "6000"
+      },
+      "nfInstanceId": "efad863f-1fe1-4c9c-b165-4c735dcd2ee7",
+      "ClientPoolSize": "8",
+      "TQ_THREADCNT_CORE": "0",
+      "TQ_THREADCNT_RAN": "0",
+      "TQ_THREADCNT_SBI": "0",
+      "maxITestLogValue": "100000",
+      "updateUeContextInDbRegularly": "true"
+    },
+    "LogConfigurations": {
+      "DisplayLog": "false",
+      "LogLevel": "DEBUG",
+      "LogPath": "/var/log/cinar/amf",
+      "LogFileName": "cnramf",
+      "LogtoFile": "true"
+    },
+    "generalParameters": {
+      "DBSettings": {
+        "dbname": "amf",
+        "dbtype": "mongo",
+        "host": "mongo.ulakhaberlesme.com.tr",
+        "port": "32017",
+        "username": "cnrusr",
+        "password": "P5vKG6vE"
+      },
+      "authJwtPublicKey": "true"
+    },
+    "RabbitMQConfigurations": {
+      "Node": "rabbit.ulakhaberlesme.com.tr",
+      "Port": "5672",
+      "AMFExchangeType": "direct",
+      "User": "admin",
+      "Password": "admin"
+    },
+    "cipheringAlgorithmOrder": ["NEA0", "NEA1", "NEA2", "NEA3"],
+    "integrityAlgorithmOrder": ["NIA1", "NIA2", "NIA3", "NIA0"],
+    "additionalParameters": {
+      "subscribedUeAmbr": {
+        "ueAggregateMaximumBitRateUl": 300000000,
+        "ueAggregateMaximumBitRateDl": 300000000
+      }
+    }
+  }
+}

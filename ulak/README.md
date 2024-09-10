@@ -1,10 +1,10 @@
 ```shell
 clear
-export MONGO_IP="20.20.0.2"
+export MONGO_IP="mongo.ulakhaberlesme.com.tr"
 export MONGO_USERNAME="cnrusr"
 export MONGO_PASS="P5vKG6vE"
-export NRF_IP=${NRF_IP_ADDRESS-"20.20.0.5"}
-export AMF_HOST_IP=${NF_DEV_IP_ADDRESS-"20.20.1.2"}
+export NRF_IP=${NRF_IP_ADDRESS-"nrf.ulakhaberlesme.com.tr"}
+export AMF_HOST_IP=${NF_DEV_IP_ADDRESS-"0.0.0.0"}
 export JSON=`cat << EOF
 {
         "_id": "0",
