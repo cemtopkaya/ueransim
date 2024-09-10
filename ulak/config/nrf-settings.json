@@ -48,7 +48,7 @@
   ],
   "Database": {
     "DatabaseType": "MONGO",
-    "Server": "mongo.ulakhaberlesme.com.tr",
+    "Server": "10.100.100.3",
     "Port": 27017,
     "DatabaseName": "cinarnrftest",
     "UserName": "cnrusr",

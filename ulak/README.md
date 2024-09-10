@@ -1,6 +1,7 @@
 ### Ortak Mongo Ayarları
 - Kullanıcı Listeleme
 - Kullanıcı Oluşturma
+- DB Listesini Çek
 
 #### Kullanıcıları Listele
 
@@ -14,6 +15,7 @@ use admin
 db.getUsers()
 ' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
+
 
 #### Kullanıcıları Oluştur
 ```sh
@@ -36,6 +38,32 @@ echo '
     );
     db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
     db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+```
+
+#### DB Listesini Çek
+```sh
+clear
+export MONGO_IP="10.100.100.3"
+export MONGO_USERNAME="cnrusr"
+export MONGO_PASS="P5vKG6vE"
+echo '
+// Mevcut veritabanlarının listesini görüntüleyin
+const databases = db.adminCommand("listDatabases").databases;
+print("------ DBs -------")
+print(databases)
+
+databases.forEach(dbInfo => {
+    print("Veritabanı: " + dbInfo.name);
+    // Veritabanına geçiş yap (doğrudan JavaScript kullanımıyla)
+    const currentDb = db.getSiblingDB(dbInfo.name); 
+    // Koleksiyonları listele
+    const collections = currentDb.getCollectionNames(); 
+    print("Koleksiyonlar: ");
+    collections.forEach(collection => {
+        print(" - " + collection);
+    });
+});
+' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
 
 ### NRF Mongo Ayarları
