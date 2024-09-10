@@ -1,7 +1,22 @@
-
 ### Ortak Mongo Ayarları
+- Kullanıcı Listeleme
+- Kullanıcı Oluşturma
 
-```shell
+#### Kullanıcıları Listele
+
+```sh
+clear
+export MONGO_IP="10.100.100.3"
+export MONGO_USERNAME="cnrusr"
+export MONGO_PASS="P5vKG6vE"
+echo '
+use admin
+db.getUsers()
+' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+```
+
+#### Kullanıcıları Oluştur
+```sh
 clear
 export MONGO_IP="10.100.100.3"
 export MONGO_USERNAME="cnrusr"
@@ -20,11 +35,11 @@ echo '
         }
     );
     db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
-    db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' |' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+    db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
 
 ### NRF Mongo Ayarları
-```shell
+```sh
 clear
 # create db and collections
 echo '
@@ -34,13 +49,13 @@ echo '
 ```
 
 ### AMF Mongo Ayarları
-```shell
+```sh
 clear
-export MONGO_IP="mongo.ulakhaberlesme.com.tr"
+export MONGO_IP="10.100.100.3"
 export MONGO_USERNAME="cnrusr"
 export MONGO_PASS="P5vKG6vE"
-export NRF_IP=${NRF_IP_ADDRESS-"nrf.ulakhaberlesme.com.tr"}
-export AMF_HOST_IP=${NF_DEV_IP_ADDRESS-"0.0.0.0"}
+export NRF_IP=${NRF_IP_ADDRESS-"10.100.100.4"}
+export AMF_HOST_IP=${NF_DEV_IP_ADDRESS-"10.100.100.5"}
 export JSON=`cat << EOF
 {
         "_id": "0",
