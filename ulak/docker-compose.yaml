@@ -1,0 +1,88 @@
+services:
+  ulak-db:
+    container_name: ulak-mongodb
+    image: mongo
+    command: mongod --port 27017
+    expose:
+      - "27017"
+    networks:
+      privnet:
+        aliases:
+          - db
+
+  ulak-nrf:
+    container_name: ulak-nrf
+    image: registry.ulakhaberlesme.com.tr/cinar/nrf/monolith:latest-stable-xenial
+    expose:
+      - 8000
+      - 8001
+      - 8005
+      - 8006
+      - 8007
+      - 8009
+      - 8010
+    volumes:
+      - ./ulak-nrf.yaml:/free5gc/config/nrfcfg.yaml
+      - ./ulak-cert:/free5gc/cert
+    environment:
+      DB_URI: mongodb://ulak-mongodb/free5gc
+      GIN_MODE: release
+    networks:
+      privnet:
+        aliases:
+          - nrf.ulakhaberlesme.com.tr
+    depends_on:
+      - ulak-db
+
+  ulak-amf:
+    container_name: ulak-amf
+    image: registry.ulakhaberlesme.com.tr/cinar/amf/monolith:latest-stable-xenial-dbg
+    expose:
+      - 6286
+      - 6210
+      - 6211
+      - 6212
+      - 6213
+      - 6224
+      - 6287
+      - 6290
+      - 38412
+    volumes:
+      - ./ulak-amf.yaml:/free5gc/config/amfcfg.yaml
+      - ./ulak-cert:/free5gc/cert
+    environment:
+      GIN_MODE: release
+    networks:
+      privnet:
+        ipv4_address:
+    depends_on:
+      - ulak-nrf
+
+  ueransim:
+    container_name: ueransim
+    image: free5gc/ueransim:latest
+    command: ./nr-gnb -c ./config/gnbcfg.yaml
+    volumes:
+      - ./ulak-gnb.yaml:/ueransim/config/gnbcfg.yaml
+      - ./ulak-ue.yaml:/ueransim/config/uecfg.yaml
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        # ipv4_address: 10.100.200.3
+        aliases:
+          - gnb.free5gc.org
+    depends_on:
+      - free5gc-amf
+      - free5gc-upf
+
+networks:
+  privnet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.100.200.0/24
+    driver_opts:
+      com.docker.network.bridge.name: br-free5gc
