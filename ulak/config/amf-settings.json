@@ -35,7 +35,7 @@
         "dbname": "amf",
         "dbtype": "mongo",
         "host": "mongo.ulakhaberlesme.com.tr",
-        "port": "32017",
+        "port": "27017",
         "username": "cnrusr",
         "password": "P5vKG6vE"
       },

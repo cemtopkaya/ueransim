@@ -13,7 +13,7 @@ services:
           - db
 
   free5gc-nrf:
-    container_name: nrf
+    container_name: free5gc-nrf
     image: free5gc/nrf:v3.4.2
     command: ./nrf -c ./config/nrfcfg.yaml
     expose:
@@ -32,7 +32,7 @@ services:
       - db
 
   free5gc-amf:
-    container_name: amf
+    container_name: free5gc-amf
     image: free5gc/amf:v3.4.2
     command: ./amf -c ./config/amfcfg.yaml
     expose:
@@ -51,7 +51,7 @@ services:
       - free5gc-nrf
 
   ueransim:
-    container_name: ueransim
+    container_name: free5gc-ueransim
     image: free5gc/ueransim:latest
     command: ./nr-gnb -c ./config/gnbcfg.yaml
     volumes:

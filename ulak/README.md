@@ -120,6 +120,8 @@ echo '
 ### AMF Mongo Ayarları
 ```sh
 clear
+# amf'in settings.json dosyasındaki Mongo DB adıyla ile aynı olmalı
+export MONGO_AMF_DB_NAME="amf"
 export MONGO_IP="10.100.100.3"
 export MONGO_USERNAME="cnrusr"
 export MONGO_PASS="P5vKG6vE"
@@ -301,7 +303,7 @@ export JSON=`cat << EOF
                 "n2InterfaceAmfInfo" : {
                     "amfName" : "AmfSto1",
                     "ipv4EndpointAddress" : [
-                        "10.10.30.45"
+                        "$AMF_HOST_IP"
                     ]
                 },
                 "taiList" : [
@@ -566,6 +568,6 @@ export JSON=`cat << EOF
 EOF`
 
 echo '
-    db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
-    db.getSiblingDB("AmfDB").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+    db.getSiblingDB("'$MONGO_AMF_DB_NAME'").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );
+    db.getSiblingDB("'$MONGO_AMF_DB_NAME'").getCollection("AmfList").insertOne('$JSON')' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```

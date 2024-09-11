@@ -115,7 +115,7 @@ services:
       - 6290
       - 38412
     volumes:
-      - ./ulak-amf.yaml:/free5gc/config/amfcfg.yaml
+      - ./config/amf-settings.json:/opt/cinar/amf/settings.json
       - ./cert/:/opt/cinar/certificate
       - ./cert/:/opt/cinar/amf/certificate
     environment:
