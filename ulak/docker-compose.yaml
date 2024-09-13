@@ -95,7 +95,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "grep -q 'DB connection is successful' /var/log/cinar/nrf/NRF.log"]
       interval: 10s
-      retries: 5
+      retries: 10
       start_period: 30s
       timeout: 5s
     depends_on:
@@ -125,6 +125,12 @@ services:
         ipv4_address: "10.100.100.6"
         aliases:
           - amf.ulakhaberlesme.com.tr
+    healthcheck:
+      test: ["CMD-SHELL", "cat /proc/net/sctp/eps | grep -q 38412"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      timeout: 5s
     depends_on:
       ulak-nrf:
         condition: service_healthy
@@ -148,8 +154,8 @@ services:
         aliases:
           - gnb.ulakhaberlesme.com.tr
     depends_on:
-      - ulak-amf
-      # - ulak-upf
+      ulak-amf:
+        condition: service_healthy
 
 networks:
   privnet:
