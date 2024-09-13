@@ -24,7 +24,7 @@
       "updateUeContextInDbRegularly": "true"
     },
     "LogConfigurations": {
-      "DisplayLog": "false",
+      "DisplayLog": "true",
       "LogLevel": "DEBUG",
       "LogPath": "/var/log/cinar/amf",
       "LogFileName": "cnramf",

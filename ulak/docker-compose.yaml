@@ -104,6 +104,7 @@ services:
   ulak-amf:
     container_name: ulak-amf
     image: registry.ulakhaberlesme.com.tr/cinar/amf/monolith:latest-stable-xenial
+    # command: tail -f /var/log/cinar/amf/*.log
     expose:
       - 6286
       - 6210
