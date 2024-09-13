@@ -77,8 +77,7 @@ echo '
             }
           ]
         }
-    );
-    db.getSiblingDB("AmfDB").createCollection("AmfList", { capped : true, size : 6142800, max : 10000 } );' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
+    );' | mongosh --host $MONGO_IP --port 27017 -u $MONGO_USERNAME -p $MONGO_PASS --authenticationDatabase "admin"
 ```
 
 #### DB Listesini Çek
